@@ -40,5 +40,14 @@ public class conexion {
         
         }
         
-        //public ResultSet ()
+        public ResultSet consultarRegistros (String strSentenciaSQL) {
+            try {
+                PreparedStatement pstm= conn.prepareStatement(strSentenciaSQL);
+                ResultSet respuesta = pstm.executeQuery();
+                return respuesta;
+            } catch (Exception e) {
+                System.out.println(e);
+                return null;
+            }
+        }
 }

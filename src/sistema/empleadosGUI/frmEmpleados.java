@@ -4,6 +4,7 @@
  */
 package sistema.empleadosGUI;
 import sistema.empleadosDAL.conexion;
+import java.sql.ResultSet;
 /**
  *
  * @author Burro Malvado
@@ -153,7 +154,17 @@ public class frmEmpleados extends javax.swing.JFrame {
     private void btnAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarActionPerformed
         // TODO add your handling code here:
         conexion objConexion= new conexion();
-        objConexion.ejecutarSentenciaSQL("INSERT INTO Empleados (ID, Nombre, Correo) VALUES (null, 'Joel', 'joel2g@email.com')");
+        objConexion.ejecutarSentenciaSQL("INSERT INTO Empleados (ID, Nombre, Correo) VALUES (null, 'Joel', 'joel3g@email.com')");
+        try {
+            ResultSet resultado= objConexion.consultarRegistros("SELECT * FROM Empleados");
+            while (resultado.next()) {
+                System.out.println(resultado.getString("ID")); 
+                System.out.println(resultado.getString("Nombre")); 
+                System.out.println(resultado.getString("Correo")); 
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+        }
     }//GEN-LAST:event_btnAgregarActionPerformed
 
     /**
