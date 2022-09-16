@@ -40,5 +40,5 @@ public class conexion {
         
         }
         
-        public ResultSet ()
+        //public ResultSet ()
 }
