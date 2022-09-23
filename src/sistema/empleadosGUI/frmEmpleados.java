@@ -5,6 +5,7 @@
 package sistema.empleadosGUI;
 import sistema.empleadosDAL.conexion;
 import java.sql.ResultSet;
+import sistema.empleadosBL.empleadosBL;
 /**
  *
  * @author Burro Malvado
@@ -154,7 +155,11 @@ public class frmEmpleados extends javax.swing.JFrame {
     private void btnAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarActionPerformed
         // TODO add your handling code here:
         conexion objConexion= new conexion();
-        objConexion.ejecutarSentenciaSQL("INSERT INTO Empleados (ID, Nombre, Correo) VALUES (null, 'Joel', 'joel3g@email.com')");
+        
+        empleadosBL oEmpleados= recuperarDatosGUI();
+        String strSentenciainsert = String.format("INSERT INTO Empleados (ID, Nombre, Correo) VALUES"
+                + " (null, '%s', '%s')", oEmpleados.getNombre(), oEmpleados.getCorreo());
+        objConexion.ejecutarSentenciaSQL(strSentenciainsert);
         try {
             ResultSet resultado= objConexion.consultarRegistros("SELECT * FROM Empleados");
             while (resultado.next()) {
@@ -166,7 +171,15 @@ public class frmEmpleados extends javax.swing.JFrame {
             System.out.println(e);
         }
     }//GEN-LAST:event_btnAgregarActionPerformed
-
+    public empleadosBL recuperarDatosGUI (){
+    empleadosBL oEmpleados=new empleadosBL();
+    int ID= (txtID.getText() .isEmpty()) ?0: Integer.parseInt(txtID.getText());
+    oEmpleados.setID(ID);
+    oEmpleados.setNombre(txtNombre.getText());
+    oEmpleados.setCorreo(txtCorreo.getText());
+    
+    return oEmpleados;
+    }
     /**
      * @param args the command line arguments
      */
