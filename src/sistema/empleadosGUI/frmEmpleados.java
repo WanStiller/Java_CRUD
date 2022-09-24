@@ -5,18 +5,28 @@
 package sistema.empleadosGUI;
 import sistema.empleadosDAL.conexion;
 import java.sql.ResultSet;
+import javax.swing.table.DefaultTableModel;
 import sistema.empleadosBL.empleadosBL;
+
 /**
  *
  * @author Burro Malvado
  */
 public class frmEmpleados extends javax.swing.JFrame {
+    
+    DefaultTableModel modelo;
 
     /**
      * Creates new form frmEmpleados
      */
     public frmEmpleados() {
         initComponents();
+        String[] titulos= {"ID", "Nombre", "Correo"};
+        
+        modelo= new DefaultTableModel (null, titulos);
+        tblEmpleados.setModel(modelo);
+        
+        mostrarDatos();
     }
 
     /**
@@ -160,17 +170,35 @@ public class frmEmpleados extends javax.swing.JFrame {
         String strSentenciainsert = String.format("INSERT INTO Empleados (ID, Nombre, Correo) VALUES"
                 + " (null, '%s', '%s')", oEmpleados.getNombre(), oEmpleados.getCorreo());
         objConexion.ejecutarSentenciaSQL(strSentenciainsert);
+        
+    }//GEN-LAST:event_btnAgregarActionPerformed
+    
+    
+    public void mostrarDatos (){
+        
+        conexion objConexion= new conexion();
+    
         try {
             ResultSet resultado= objConexion.consultarRegistros("SELECT * FROM Empleados");
             while (resultado.next()) {
                 System.out.println(resultado.getString("ID")); 
                 System.out.println(resultado.getString("Nombre")); 
-                System.out.println(resultado.getString("Correo")); 
+                System.out.println(resultado.getString("Correo"));
+                
+                Object [] oUsuario={resultado.getString("ID"), resultado.getString("Nombre"), resultado.getString("Correo")};
+                
+                modelo.addRow(oUsuario);
+                        
             }
         } catch (Exception e) {
             System.out.println(e);
         }
-    }//GEN-LAST:event_btnAgregarActionPerformed
+        
+        
+                
+                
+    }
+    
     public empleadosBL recuperarDatosGUI (){
     empleadosBL oEmpleados=new empleadosBL();
     int ID= (txtID.getText() .isEmpty()) ?0: Integer.parseInt(txtID.getText());
