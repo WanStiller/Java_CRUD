@@ -5,8 +5,12 @@
 package sistema.empleadosGUI;
 import sistema.empleadosDAL.conexion;
 import java.sql.ResultSet;
+import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import sistema.empleadosBL.empleadosBL;
+//import javax.swing.JTable;
+
+
 
 /**
  *
@@ -26,7 +30,8 @@ public class frmEmpleados extends javax.swing.JFrame {
         modelo= new DefaultTableModel (null, titulos);
         tblEmpleados.setModel(modelo);
         
-        mostrarDatos();
+        this.mostrarDatos();
+        this.limpiar();
     }
 
     /**
@@ -66,8 +71,14 @@ public class frmEmpleados extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        tblEmpleados.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblEmpleadosMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(tblEmpleados);
 
+        btnAgregar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/sistema/recursos/mas.png"))); // NOI18N
         btnAgregar.setText("Agregar");
         btnAgregar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -75,6 +86,7 @@ public class frmEmpleados extends javax.swing.JFrame {
             }
         });
 
+        btnEditar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/sistema/recursos/editar-texto.png"))); // NOI18N
         btnEditar.setText("Editar");
         btnEditar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -82,9 +94,17 @@ public class frmEmpleados extends javax.swing.JFrame {
             }
         });
 
+        btnBorrar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/sistema/recursos/borrar.png"))); // NOI18N
         btnBorrar.setText("Borrar");
+        btnBorrar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBorrarActionPerformed(evt);
+            }
+        });
 
         txtNombre.setToolTipText("");
+
+        txtID.setEditable(false);
 
         jLabel1.setText("ID");
 
@@ -95,7 +115,13 @@ public class frmEmpleados extends javax.swing.JFrame {
         jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel4.setText("CRUD JAVA");
 
+        btnCancelar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/sistema/recursos/cancelar.png"))); // NOI18N
         btnCancelar.setText("Cancelar");
+        btnCancelar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCancelarActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -125,12 +151,12 @@ public class frmEmpleados extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGap(206, 206, 206)
                         .addComponent(jLabel4)))
-                .addContainerGap(21, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(18, Short.MAX_VALUE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabel4)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel1)
@@ -160,6 +186,17 @@ public class frmEmpleados extends javax.swing.JFrame {
 
     private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
         // TODO add your handling code here:
+        
+        conexion objConexion= new conexion();
+        
+        empleadosBL oEmpleados= recuperarDatosGUI();
+        
+        String strSentenciaInsert = String.format("UPDATE Empleados SET Nombre='%s',"
+                + "Correo='%s' WHERE ID=%d", oEmpleados.getNombre(), oEmpleados.getCorreo(), oEmpleados.getID());
+        objConexion.ejecutarSentenciaSQL(strSentenciaInsert);
+        this.mostrarDatos();
+        
+        this.limpiar();
     }//GEN-LAST:event_btnEditarActionPerformed
 
     private void btnAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarActionPerformed
@@ -167,15 +204,53 @@ public class frmEmpleados extends javax.swing.JFrame {
         conexion objConexion= new conexion();
         
         empleadosBL oEmpleados= recuperarDatosGUI();
-        String strSentenciainsert = String.format("INSERT INTO Empleados (ID, Nombre, Correo) VALUES"
+        String strSentenciaInsert = String.format("INSERT INTO Empleados (ID, Nombre, Correo) VALUES"
                 + " (null, '%s', '%s')", oEmpleados.getNombre(), oEmpleados.getCorreo());
-        objConexion.ejecutarSentenciaSQL(strSentenciainsert);
-        
+        objConexion.ejecutarSentenciaSQL(strSentenciaInsert);
+        this.mostrarDatos();
+        this.limpiar();
     }//GEN-LAST:event_btnAgregarActionPerformed
+
+    private void tblEmpleadosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblEmpleadosMouseClicked
+        
+        //
+        
+        if (evt.getClickCount()==1){
+            
+            JTable receptor= (JTable)evt.getSource();
+            
+            txtID.setText (receptor.getModel() . getValueAt(receptor.getSelectedRow(),0).toString());
+            txtNombre.setText (receptor.getModel() . getValueAt(receptor.getSelectedRow(),1).toString());
+            txtCorreo.setText (receptor.getModel() . getValueAt(receptor.getSelectedRow(),2).toString());
+        }
+            btnAgregar.setEnabled(false);
+            btnEditar.setEnabled(true);
+            btnBorrar.setEnabled(true);
+    }//GEN-LAST:event_tblEmpleadosMouseClicked
+
+    private void btnBorrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBorrarActionPerformed
+
+
+        conexion objConexion= new conexion();
+        
+        empleadosBL oEmpleados= recuperarDatosGUI();
+        String strSentenciainsert = String.format("DELETE FROM Empleados WHERE ID=%d" , oEmpleados.getID());
+        objConexion.ejecutarSentenciaSQL(strSentenciainsert);
+        this.mostrarDatos();
+        this.limpiar();
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnBorrarActionPerformed
+
+    private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
+        this.limpiar();
+    }//GEN-LAST:event_btnCancelarActionPerformed
     
     
     public void mostrarDatos (){
         
+        while (modelo.getRowCount()>0){
+        modelo.removeRow(0);
+        }
         conexion objConexion= new conexion();
     
         try {
@@ -208,9 +283,15 @@ public class frmEmpleados extends javax.swing.JFrame {
     
     return oEmpleados;
     }
-    /**
-     * @param args the command line arguments
-     */
+    public void limpiar (){
+    txtID.setText("");
+    txtNombre.setText("");
+    txtCorreo.setText("");
+    
+    btnAgregar.setEnabled(true);
+    btnEditar.setEnabled(false);
+    btnBorrar.setEnabled(false);
+    }
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
